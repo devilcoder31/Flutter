@@ -1,0 +1,47 @@
+import 'package:flutter/material.dart';
+
+void main(){
+  runApp(MyApp());
+}
+class MyApp extends StatelessWidget{
+  Widget build(BuildContext context){
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text("Welcome to Flutter"),
+        ),
+        body: Center(
+           child:Column(
+             mainAxisAlignment: MainAxisAlignment.center,
+             children: [
+               Text("Welcome to Flutter"
+               ,style:TextStyle(fontSize: 24),
+               ),
+               SizedBox(height: 10,),
+               Row(
+                 mainAxisAlignment: MainAxisAlignment.center,
+                 children: [
+                   Icon(Icons.star
+                   ,color: Colors.yellow,
+                   ),
+                   SizedBox(width: 10,),
+                   Text(" Learning Flutter Layouts"
+                   ,style: TextStyle(fontSize: 22),
+                   )
+                 ],
+               ),
+               SizedBox(height: 10,),
+               Text(" Let's build apps together "
+               ,style:TextStyle(
+                     fontSize: 20,
+                     color:Colors.grey ,
+                   )
+               )
+             ],
+           )
+
+        ),
+      ),
+    );
+  }
+}
