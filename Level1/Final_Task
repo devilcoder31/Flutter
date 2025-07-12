@@ -1,0 +1,55 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+void main(){
+  runApp(MyApp());
+}
+class MyApp extends StatelessWidget{
+  Widget build(BuildContext Context){
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: Text("My Flutter APP"),),
+        body: Center(
+          child: Container(
+            padding: EdgeInsets.all(5),
+            margin: EdgeInsets.all(5),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.face_4_sharp),
+                    SizedBox(width: 10),
+                    Text("Profile Icon")
+                  ]
+
+                ),
+                SizedBox(height: 20),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Name:"),
+                      SizedBox(width: 10),
+                      Text("Flutter Developer")
+                    ]
+
+                ),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Role:"),
+                      SizedBox(width: 10),
+                      Text("Beginner Learner")
+                    ]
+
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
