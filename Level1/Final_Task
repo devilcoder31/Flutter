@@ -30,7 +30,9 @@ class MyApp extends StatelessWidget{
                 Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Name:"),
+                      Text("Name:"
+                      ,style: TextStyle(color: Colors.pink),
+                      ),
                       SizedBox(width: 10),
                       Text("Flutter Developer")
                     ]
@@ -39,7 +41,8 @@ class MyApp extends StatelessWidget{
                 Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Role:"),
+                      Text("Role:"
+                      , style: TextStyle(color: Colors.blue)),
                       SizedBox(width: 10),
                       Text("Beginner Learner")
                     ]
