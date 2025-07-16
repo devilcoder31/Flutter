@@ -1,0 +1,45 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+void main(){
+  runApp(MyApp());
+}
+class MyApp extends StatelessWidget{
+  Widget build(BuildContext context){
+    return MaterialApp(
+      home: Scaffold(
+        body:Center(child: Container(
+          width: 120,
+          height: 120,
+          decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(colors:[
+                Colors.purple,
+                Colors.blue
+              ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight
+              ),
+              border:Border.all(
+                  width: 4,
+                  color: Colors.white
+              ),
+              boxShadow:[
+                BoxShadow(
+                    color:Colors.black26,
+                    offset:Offset(2, 2),
+                    blurRadius: 6
+                )
+              ]
+
+          ),
+          child: Center(child:Text("Badge",
+            style: TextStyle(
+                fontWeight:FontWeight.bold,
+                fontSize: 18
+            ),),),
+        ),),
+      ),
+    );
+  }
+}
