@@ -1,1 +1,54 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
+void main() => runApp(MyApp());
+class MyApp extends StatelessWidget{
+  Widget build(BuildContext context){
+    return MaterialApp(
+      home:TextFieldWidget(),
+    );
+  }
+}
+class TextFieldWidget extends StatefulWidget{
+  _TextFieldWidget createState() => _TextFieldWidget();
+}
+class _TextFieldWidget extends State<TextFieldWidget>{
+  TextEditingController controller=TextEditingController();
+  String stringData="";
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            TextField(
+              controller: controller,
+
+              decoration: InputDecoration(
+                contentPadding:EdgeInsets.symmetric(horizontal: 25 , vertical: 10),
+                border: OutlineInputBorder(),
+                hint: Text("enter anything"),
+
+              ),
+              onChanged:(value){
+                stringData="live data :$value";
+                setState(() {
+
+                });
+
+              },
+              onSubmitted:(value){
+                stringData="final value:$value";
+                setState(() {
+
+                });
+              },
+            ),
+            Text(stringData)
+          ],
+        ),
+      ),
+    );
+  }
+}
