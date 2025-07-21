@@ -1,0 +1,72 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+void main() => runApp(MyApp());
+class MyApp extends StatelessWidget{
+  Widget build(BuildContext context){
+    return MaterialApp(
+      home:TextFieldWidget(),
+    );
+  }
+}
+class TextFieldWidget extends StatefulWidget{
+  _TextFieldWidget createState() => _TextFieldWidget();
+}
+class _TextFieldWidget extends State<TextFieldWidget>{
+  TextEditingController controller=TextEditingController();
+  String stringData="";
+  bool value=false;
+  Color c=Colors.white;
+  var switchValue=false;
+  var textColor=Colors.black;
+  IconData i=Icons.sunny;
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: Center(
+        child: Container(
+            width: double.infinity,
+            height:double.infinity,
+            decoration: BoxDecoration(
+              color: c
+            ),
+            child:Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Switch(
+              value:switchValue,
+              onChanged:(bool newValue){
+
+                setState(() {
+                  switchValue=newValue;
+                  if(!newValue){
+                    c=Colors.white;
+                    textColor=Colors.black;
+                    i=Icons.sunny;
+                  }
+                  else{
+                    c=Colors.black;
+                    textColor=Colors.white;
+                    i=Icons.nights_stay;
+                  }
+                });
+              },
+            )
+            ,Text(
+              switchValue ? "Dark Mode" : "Light Mode",
+              style:TextStyle(
+                color: textColor
+              ),
+            ),
+            Icon(
+              i,
+              color: textColor,
+
+            )
+
+          ],
+        ))
+      ),
+    );
+  }
+}
