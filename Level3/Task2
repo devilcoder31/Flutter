@@ -1,0 +1,59 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+void main(){
+  runApp(MyApp());
+}
+class MyApp extends StatelessWidget{
+  Widget build(BuildContext context){
+    return MaterialApp(home: Scaffold(
+      body:ButtonWidget()
+    ),
+    );
+  }
+
+}
+class ButtonWidget extends StatefulWidget{
+  _ButtonWidgetState createState()=>_ButtonWidgetState();
+}
+class _ButtonWidgetState extends State<ButtonWidget>{
+  TextEditingController controller=TextEditingController();
+  String s="starting string";
+  Widget build(BuildContext context){
+    return Center(
+      child:Container(
+        margin:EdgeInsets.all(10),
+        padding:EdgeInsets.all(32),
+        child:  Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          TextField(
+            decoration:InputDecoration(
+              label: Text("Enter text"),
+              border: OutlineInputBorder(),
+            ),
+            controller: controller,
+          ),
+
+          SizedBox(height: 24),
+          ElevatedButton(
+           style: ElevatedButton.styleFrom(
+             backgroundColor: Colors.purple
+           ),
+              child: Text("Show"),
+
+              onPressed:(){
+              s=controller.text;
+              controller.clear();
+          setState(() {
+
+          });}
+          ),
+          SizedBox(height: 24),
+          Text(s)
+        ],
+      ),)
+    );
+  }
+}
