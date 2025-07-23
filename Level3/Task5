@@ -1,0 +1,95 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget{
+  Widget build(BuildContext context){
+    return MaterialApp(
+      home:RadioButtonWidget()
+    );
+  }
+}
+enum UserType{
+  Admin,Guest,SuperAdmin;
+}
+enum LoginStatus{
+  Online,Offline;
+}
+class RadioButtonWidget extends StatefulWidget{
+  _RadioButtonWidget createState() => _RadioButtonWidget();
+}
+class _RadioButtonWidget extends State<RadioButtonWidget>{
+  var userType;
+  var loginStatus;
+  var textStyle=TextStyle(fontSize: 20);
+    Widget build(BuildContext context){
+      return Scaffold(
+        body: Center(
+          child: Container(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text("Select UserType",style: textStyle,),
+                RadioListTile<UserType>(
+                  title:Text("Admin"),
+                  value:UserType.Admin,
+                  groupValue: userType,
+                  onChanged:(UserType? value){
+                      setState(() {
+                        userType=value!;
+                      });
+                  },
+                ),
+                RadioListTile<UserType>(
+                  title:Text("Guest"),
+                  value:UserType.Guest,
+                  groupValue: userType,
+                  onChanged:(UserType? value){
+                    setState(() {
+                      userType=value!;
+                    });
+                  },
+                ),
+                RadioListTile<UserType>(
+                  title:Text("SuperAdmin"),
+                  value:UserType.SuperAdmin,
+                  groupValue: userType,
+                  onChanged:(UserType? value){
+                    setState(() {
+                      userType=value!;
+                    });
+                  },
+                ),
+                SizedBox(height: 20),
+                Text("Select Status",style: textStyle,),
+                RadioListTile<LoginStatus>(
+                  title:Text("Offline"),
+                  value:LoginStatus.Offline,
+                  groupValue: loginStatus,
+                  onChanged:(LoginStatus? value){
+                    setState(() {
+                      loginStatus=value!;
+                    });
+                  },
+                ),
+                RadioListTile<LoginStatus>(
+                  title:Text("Onfline"),
+                  value:LoginStatus.Online,
+                  groupValue: loginStatus,
+                  onChanged:(LoginStatus? value){
+                    setState(() {
+                      loginStatus=value!;
+                    });
+                  },
+                ),
+                SizedBox(height: 20,),
+                Text(style:textStyle,"Welcome you are ${userType.toString().split('.').last} currently ${loginStatus.toString().split('.').last}")
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+}
