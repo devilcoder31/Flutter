@@ -1,0 +1,69 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget{
+  Widget build(BuildContext context){
+    return MaterialApp(
+      home:RadioButtonWidget()
+    );
+  }
+}
+enum UserType{
+  Admin,Guest,SuperAdmin;
+}
+enum LoginStatus{
+  Online,Offline;
+}
+class RadioButtonWidget extends StatefulWidget{
+  _RadioButtonWidget createState() => _RadioButtonWidget();
+}
+class _RadioButtonWidget extends State<RadioButtonWidget>{
+  double sliderValue=12;
+  double textSize=12;
+
+    Widget build(BuildContext context){
+      double t=(sliderValue-12)/(50-12);
+      return Scaffold(
+        body: Center(
+          child: Container(
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(colors:[
+                Colors.red,Colors.black
+
+              ],
+              begin: Alignment.bottomLeft,
+              end: Alignment.topRight,
+              stops:[0.0,t.clamp(0.0,1.0)])
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(padding:EdgeInsets.all(16)
+                 ,child: Slider(
+                      value: sliderValue,
+                      min: 12,
+                      max: 50,
+                      divisions: 8,
+                      label: sliderValue.round().toString(),
+                      onChanged:(value){
+                        setState(() {
+                          sliderValue=value;
+                          textSize=value;                       });
+                      }
+
+                  ),
+                ),
+                Text("Flutter is fun",style:
+                  TextStyle(fontSize: textSize,color: Colors.teal)
+                  )
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+}
