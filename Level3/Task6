@@ -1,0 +1,135 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget{
+  Widget build(BuildContext context){
+    return MaterialApp(
+      home:RadioButtonWidget()
+    );
+  }
+}
+enum UserType{
+  Admin,Guest,SuperAdmin;
+}
+enum LoginStatus{
+  Online,Offline;
+}
+class RadioButtonWidget extends StatefulWidget{
+  _RadioButtonWidget createState() => _RadioButtonWidget();
+}
+class _RadioButtonWidget extends State<RadioButtonWidget>{
+  var userType;
+  var loginStatus;
+  var textStyle=TextStyle(fontSize: 20);
+  var currentText;
+  var c=Colors.white;
+  IconData? ri;
+  String status="";
+  String roleMessage="";
+  IconData? i;
+    Widget build(BuildContext context){
+      return Scaffold(
+        body: Center(
+          child: Container(
+            color: c,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text("Select UserType",style: textStyle,),
+                RadioListTile<UserType>(
+                  title:Text("Admin"),
+                  value:UserType.Admin,
+                  groupValue: userType,
+                  onChanged:(UserType? value){
+                      setState(() {
+                        userType=value!;
+                        c=Colors.red;
+                        i=Icons.warning;
+                        roleMessage="Admin privileges Enabled";
+                      });
+                  },
+                ),
+                RadioListTile<UserType>(
+                  title:Text("Guest"),
+                  value:UserType.Guest,
+                  groupValue: userType,
+                  onChanged:(UserType? value){
+                    setState(() {
+                      userType=value!;
+                      roleMessage="Guest Mode";
+                      c=Colors.green;
+                      i=Icons.person;
+                    });
+                  },
+                ),
+                RadioListTile<UserType>(
+                  title:Text("SuperAdmin"),
+                  value:UserType.SuperAdmin,
+                  groupValue: userType,
+                  onChanged:(UserType? value){
+                    setState(() {
+                      userType=value!;
+                      roleMessage="Super Admin Access";
+                      c=Colors.blue;
+                      i=Icons.security;
+                    });
+                  },
+                ),
+                SizedBox(height: 20),
+                Text("Select Status",style: textStyle,),
+                RadioListTile<LoginStatus>(
+                  title:Text("Offline"),
+                  value:LoginStatus.Offline,
+                  groupValue: loginStatus,
+                  onChanged:(LoginStatus? value){
+                    setState(() {
+                      loginStatus=value!;
+                      ri=Icons.wifi_off;
+                      status="You are Offline";
+                    });
+                  },
+                ),
+                RadioListTile<LoginStatus>(
+                  title:Text("Online"),
+                  value:LoginStatus.Online,
+                  groupValue: loginStatus,
+                  onChanged:(LoginStatus? value){
+                    setState(() {
+                      loginStatus=value!;
+                      ri=Icons.wifi;
+                      status="You are Online";
+                    });
+                  },
+                ),
+                SizedBox(height: 20,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(i),
+                    SizedBox(width:5),
+                    Text(roleMessage)
+
+                  ],
+                )
+                ,SizedBox(height: 20,)
+              ,Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(ri),
+                      SizedBox(width:5),
+                      Text(status)
+
+                    ]
+                )
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+}
