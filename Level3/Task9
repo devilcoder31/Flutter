@@ -1,0 +1,63 @@
+import 'dart:async';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget{
+  Widget build(BuildContext context){
+    return MaterialApp(
+      home:RadioButtonWidget()
+    );
+  }
+}
+enum UserType{
+  Admin,Guest,SuperAdmin;
+}
+enum LoginStatus{
+  Online,Offline;
+}
+class RadioButtonWidget extends StatefulWidget{
+  _RadioButtonWidget createState() => _RadioButtonWidget();
+}
+class _RadioButtonWidget extends State<RadioButtonWidget>{
+  double value=0.0;
+  Timer? timer;
+void initState(){
+  super.initState();
+  initProgress();
+}
+void initProgress(){
+  timer=Timer.periodic(Duration(milliseconds: 400), (timer){
+    setState(() {
+     value+=0.1;
+     if(value>=1.0){
+       timer.cancel();
+     }
+    });
+  });
+}
+    Widget build(BuildContext context){
+
+      return Scaffold(
+        body: Center(
+          child: Container(
+            padding: EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                LinearProgressIndicator(
+                  color: Colors.deepPurple,
+                  backgroundColor: Colors.grey,
+                ),
+                Text("${(value*100).toInt()}",style:
+                  TextStyle(fontSize: 24),)
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+}
