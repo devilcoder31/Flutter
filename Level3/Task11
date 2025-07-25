@@ -1,0 +1,109 @@
+import 'dart:async';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'Modules/City.dart';
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget{
+  Widget build(BuildContext context){
+    return MaterialApp(
+      home:RadioButtonWidget()
+    );
+  }
+}
+enum UserType{
+  Admin,Guest,SuperAdmin;
+}
+enum LoginStatus{
+  Online,Offline;
+}
+class RadioButtonWidget extends StatefulWidget{
+  _RadioButtonWidget createState() => _RadioButtonWidget();
+}
+class _RadioButtonWidget extends State<RadioButtonWidget>{
+   List< Map<String,String>> countries =[{"code":"In","name":"India"},{"code":"US","name":"USA"},{"code":"JP","name":"JAPAN"}];
+    List<String> items=["Apple","Banana","Cherry"];
+    String? selectedString;
+    String? selectedMapKey;
+    City? selectedCity;
+List<City> cities =[City(id:"1",name: "Mumbai"),City(id:"2",name: "Tokyo"),City(id: "3", name:"NewYork")];
+String findCountry(String value){
+  return countries.firstWhere((item)=>item['code']==value)['name']!;
+
+}
+    Widget build(BuildContext context){
+
+      return Scaffold(
+        body: Center(
+          child: Container(
+            padding: EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                 Row(
+                   mainAxisAlignment: MainAxisAlignment.center,
+                   crossAxisAlignment: CrossAxisAlignment.center,
+                   children: [
+                      DropdownButton<String>(
+
+                      value:selectedString,
+                        items:items.map((val){
+                          return DropdownMenuItem(child:Text(val), value: val);
+                        }).toList(),
+                        onChanged:(String? val){
+                        setState(() {
+                          selectedString=val;
+                        });
+                        },
+                        hint: Text("Fruits"),
+
+                      ),SizedBox(width: 32
+                       ,),
+
+
+                     DropdownButton<String>(
+                       hint:Text("Countries"),
+                       value:selectedMapKey,
+                       items:countries.map((item){
+                         return DropdownMenuItem<String>(
+                             child:Text(item['name']!),
+                             value:item['code']);
+                     }).toList(),
+                       
+                       onChanged:(val){
+                         setState(() {
+                            selectedMapKey=val;
+                         });
+                       }
+                     ,  ),SizedBox(width: 32,),
+                     DropdownButton<City>(
+
+                       hint: Text("City"),
+                         value: selectedCity,
+                         items:cities.map((val){
+                           return DropdownMenuItem<City>(child:Text(val.name),value: val,);
+                         }).toList(),
+                       onChanged:(val){
+                           setState(() {
+                              selectedCity=val;
+                           });
+                       },
+                     )
+                   ],
+                 )
+                ,Text("Selected String :$selectedString"),
+            Text("Selected Map :${findCountry(selectedMapKey!)}"),
+              Text("Selected Model :${selectedCity?.name}")
+
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+}
+
