@@ -1,0 +1,98 @@
+import 'dart:async';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget{
+  Widget build(BuildContext context){
+    return MaterialApp(
+      home:RadioButtonWidget()
+    );
+  }
+}
+enum UserType{
+  Admin,Guest,SuperAdmin;
+}
+enum LoginStatus{
+  Online,Offline;
+}
+class RadioButtonWidget extends StatefulWidget{
+  _RadioButtonWidget createState() => _RadioButtonWidget();
+}
+class _RadioButtonWidget extends State<RadioButtonWidget>{
+    TimeOfDay selectedTime=TimeOfDay.now();
+    DateTime date=DateTime.now();
+    String formattedDate="";
+    String formattedTime="";
+    @override
+void initState(){
+  super.initState();
+  initProgress();
+}
+void initProgress(){
+
+}
+
+
+    Widget build(BuildContext context){
+      formattedDate=DateFormat("EEEE, dd/MM/yyyy").format(date);
+      formattedTime=selectedTime.format(context);
+      return Scaffold(
+        body: Center(
+          child: Container(
+            padding: EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                 Row(
+                   mainAxisAlignment: MainAxisAlignment.center,
+                   crossAxisAlignment: CrossAxisAlignment.center,
+                   children: [
+                     ElevatedButton(onPressed:selectDate, child:Text("Choose a Date")),
+
+                   ElevatedButton(onPressed: selectTime, child:Text("Choose a Time"))
+                   ],
+                 ),
+      SizedBox(height:16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    ElevatedButton(onPressed: null, child:Text(formattedDate,style: TextStyle(
+                        fontWeight: FontWeight.bold,color: Colors.black))),
+                   
+                    ElevatedButton(onPressed: null, child:Text(formattedTime,style: TextStyle(
+                        fontWeight: FontWeight.bold,color: Colors.black)))
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+    void selectTime() async{
+      TimeOfDay? time= await showTimePicker(context: context, initialTime: selectedTime);
+      if(time !=null && time!= selectedTime){
+
+        setState(() {
+          selectedTime=time;
+          formattedTime=selectedTime.format(context);
+        });
+      }
+
+}
+void selectDate() async{
+  DateTime? picker= await showDatePicker(context: context, firstDate:DateTime(1990), lastDate:DateTime(2057),initialDate:date);
+  if(picker!= null && picker!= date){
+    date=picker;
+    setState(() {
+      formattedDate=DateFormat("EEEE ,dd/MM/yyyy").format(date);
+    });
+
+  }
+}
+}
