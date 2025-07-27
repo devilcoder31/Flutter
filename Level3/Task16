@@ -1,0 +1,111 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+void main()=>runApp(MyApp());
+class MyApp extends StatelessWidget{
+  Widget build(BuildContext context){
+    return MaterialApp(
+      home: MyForm(),
+    );
+  }
+}
+class MyForm extends StatefulWidget{
+  _MyForm createState() => _MyForm();
+}
+class _MyForm extends State<MyForm>{
+  var key=GlobalKey<FormState>();
+  var password="";
+  FocusNode f1=FocusNode();
+  FocusNode f2=FocusNode();
+  FocusNode f3=FocusNode();
+  FocusNode f4=FocusNode();
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: Center(
+        child: Form(
+          key: key,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            child:Container(
+                margin: EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
+                child:Column(
+              
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            TextFormField(
+              focusNode: f1,
+              textInputAction: TextInputAction.next,
+              onFieldSubmitted:(_){
+                FocusScope.of(context).requestFocus(f2);
+              },
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hint: Text("enter your name")
+              ),
+              validator: (val){
+                if(val == null || val.isEmpty){
+                  return "Please enter Name";
+                }
+                return null;
+              },
+            ),
+            SizedBox(height: 15),
+            TextFormField(
+              focusNode: f2,
+              textInputAction: TextInputAction.next,
+              onFieldSubmitted: (_){
+                FocusScope.of(context).requestFocus(f3);
+              },
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hint: Text("enter your email")
+            ),
+              validator: (val){
+                if(val == null || !val.contains('@')){
+                  return "invalid email";
+                }
+                return null;
+              },), SizedBox(height: 15),
+            TextFormField(
+              focusNode: f3,
+              textInputAction: TextInputAction.next,
+              onFieldSubmitted: (_){
+                FocusScope.of(context).requestFocus(f4);
+              },
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hint: Text("Password")
+            ),
+              validator: (val){
+                if(val == null || val.length<6){
+                  return "Password is too short";
+                }
+                password=val;
+                return null;
+              },),SizedBox(height: 15),
+            TextFormField(
+              focusNode: f4,
+              
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hint: Text("Confirm Password")
+            ),
+              validator: (val){
+                if(val == null || val != password){
+                  return "Password doesn't match";
+                }
+                return null;
+              },),
+            ElevatedButton(onPressed:(){
+              if(key.currentState!.validate()){
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Registration Successful"),backgroundColor: Colors.green,));
+              }
+            }, child:Text("Submit"))
+          ],
+        ))),
+      ),
+
+    );
+  }
+}
