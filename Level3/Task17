@@ -1,0 +1,59 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: MyForm(),
+    );
+  }
+}
+
+class MyForm extends StatefulWidget {
+  @override
+  _MyFormState createState() => _MyFormState();
+}
+
+class _MyFormState extends State<MyForm> {
+  double top = 100.0;
+  double left = 100.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body:
+         Stack( // Use Stack to allow Positioned widget
+          children: [
+            Positioned(
+                top: top,
+                left: left,
+                child:GestureDetector(
+                  onPanUpdate:(details){
+                    setState(() {
+                      top+=details.delta.dy;
+                      left+=details.delta.dx;
+                    });
+                  },
+              child: Container(height: 120,width: 120,color: Colors.red,),
+            )),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: InkWell(
+                splashColor: Colors.redAccent,
+                borderRadius: BorderRadius.circular(12),
+                child: Container(margin: EdgeInsets.only(bottom: 60),
+                  width: 120,height: 120,color: Colors.yellow,),
+                onTap:(){
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Yellow box Tapped",style: TextStyle(color: Colors.green),)));
+                },
+              ),
+            )
+          ],
+        ),
+
+    );
+  }
+}
