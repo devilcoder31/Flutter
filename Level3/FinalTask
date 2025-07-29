@@ -1,0 +1,192 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: MyForm(),
+    );
+  }
+}
+
+class MyForm extends StatefulWidget {
+  @override
+  _MyFormState createState() => _MyFormState();
+}
+
+class _MyFormState extends State<MyForm> {
+  double top = 100.0;
+  double left = 100.0;
+  String? selectedItem;
+var key=GlobalKey<FormState>();
+String name="";
+List<String> foodItems=["Pizza","Burger","Pasta"];
+int currentCount=1;
+
+var switchVal=false;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Place Your Order",style:TextStyle(fontWeight: FontWeight.bold,fontSize: 26) ,),),
+      body:GestureDetector(
+          onTap:(){
+            setState(() {
+              FocusScope.of(context).unfocus();
+            });
+
+          },
+          child:Form(key: key,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child:Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            margin:EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              spacing: 16,
+              children: [
+                TextFormField(
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hint:Text("Name")
+                  ),
+                  validator:(val){
+                    if(val==null || val.isEmpty){
+                      return "please enter name";
+                    }
+                    name=val;
+                    return null;
+                  },
+
+                ),
+                TextFormField(
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hint:Text("Email")
+                  ),
+                  validator:(val){
+                    if(val==null || (!val.contains('@') && !val.contains('.'))){
+                      return "please enter valid Email";
+                    }
+                    return null;
+                  },
+
+                ),
+                TextFormField(
+                  minLines: 2,
+                  maxLines: 4,
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hint:Text("Address")
+                  ),
+                  validator:(val){
+                    if(val==null || val.isEmpty){
+                      return "please enter address";
+                    }
+                    return null;
+                  },
+
+                )
+              ],
+            ),
+          ),
+          Container(margin:EdgeInsets.all(20),
+          child: DropdownButtonFormField(
+            decoration: InputDecoration(
+                border: OutlineInputBorder()
+            ),
+            validator:(val){
+              if(val==null || val.isEmpty){
+                return "please select food item";
+              }
+              return null;
+            },
+            hint:Text("Select food item"),
+            value: selectedItem,
+            items:foodItems.map((val){
+              return DropdownMenuItem(
+                value:val ,
+                child: Text(val),
+              );
+            }).toList(),
+            onChanged:(val){
+              setState(() {
+                selectedItem=val;
+              });
+            },
+
+          ) ,),
+          SwitchListTile(
+          title: Text("Include Cutlery"),
+            value: switchVal,
+            onChanged:(val){
+            setState(() {
+              switchVal=val;
+            });
+            },
+          ),
+          Stepper(steps:[
+          Step(title: Text("Select Quantity"), content:Text(currentCount.toString()))
+    ],
+    onStepContinue:(){
+            setState(() {
+              currentCount++;
+            });
+    },
+    onStepCancel:(){
+            if(currentCount>1){
+              currentCount--;
+    }
+    },
+            controlsBuilder: (BuildContext context , ControlsDetails details){
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(onPressed: (){
+
+                      details.onStepContinue!();
+
+
+                  }, child:Text("+")), ElevatedButton(onPressed: (){
+                    details.onStepCancel!();
+                  }, child:Text("-"))
+                ],
+              );
+            },
+    ),Container(margin: EdgeInsets.only(top: 24),child:ElevatedButton(onPressed:(){
+          if(key.currentState!.validate()){
+            showDialog(context: context, builder:(context){
+              return AlertDialog(
+                title: Text(("Confirm Order")),
+                content:Text("$name's order summary \n item:$selectedItem \n quantity:$currentCount \ncurtlery status:${switchVal?"included":"not included"}") ,
+                actions: [
+                  ElevatedButton(onPressed:(){
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text("Order Placed Successfully"),backgroundColor: Colors.green,));
+                  }, child: Text("Confirm"),),
+                  ElevatedButton(onPressed:(){
+                    Navigator.of(context).pop();
+                  }, child:Text("Cancel"))
+                ],
+              );
+            });
+          }else{
+            null;
+          }
+          }, child:Text("Submit Order")
+
+          ),)
+
+        ],
+      )
+
+
+      )));
+  }
+}
