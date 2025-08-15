@@ -1,0 +1,53 @@
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+void main(){
+  runApp(MyApp());
+}
+class MyApp extends StatelessWidget {
+
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home:Choice());
+  }
+}
+class Choice extends StatefulWidget{
+  _Choice createState() => _Choice();
+}
+class _Choice extends State<Choice>{
+  Color c=Colors.white;
+  List<String> items=['dessert','drink','food'];
+  Set<String> selectedItems={};
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: Center(
+        child: Wrap(
+          spacing: 8,
+          runSpacing: 4,
+          children:items.map((val){
+            bool isSelected=selectedItems.contains(val);
+            return ChoiceChip(
+              label: Text(val),
+              selected: isSelected,
+              onSelected:(select){
+              setState(() {
+                if(select){
+                  selectedItems.add(val);
+                }
+                else{
+                  selectedItems.remove(val);
+                }
+              });
+
+
+              },
+                selectedColor:val == 'dessert' ? Colors.pink : val =="drink" ? Colors.green : Colors.orange
+            )
+            ;
+          }).toList() ,
+        ),
+      ),
+    );
+  }
+}
