@@ -1,0 +1,71 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+void main()=> runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  Widget build(BuildContext context){
+    return MaterialApp(
+      initialRoute:'/home',
+      routes: {
+
+        '/profile':(context)=>ProfileScreen(),
+        '/settings':(context)=>SettingScreen()
+      },
+      home:HomeScreen()
+    );
+  }
+}
+class HomeScreen extends StatelessWidget{
+  TextEditingController controler=TextEditingController();
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: Center(child:Column(mainAxisAlignment:MainAxisAlignment.center,children: [ TextField(
+        controller:controler ,
+        decoration: InputDecoration(
+          hint:Text("Enter name")
+              ,border:OutlineInputBorder(
+          borderSide:BorderSide(color: Colors.black,width: 2),
+        )
+        ),
+      ),
+      ElevatedButton(onPressed: (){
+        if(controler.text== null){
+          ScaffoldMessenger.of(context).showSnackBar(new SnackBar(content: Text("Plaease enter name")));
+        }else{
+        Navigator.pushNamed(context,'/profile', arguments:controler.text);}
+      }, child: Text("ProfileScreen"))],
+    )));
+  }
+}
+class ProfileScreen extends StatelessWidget{
+
+  Widget build(BuildContext context){
+    String name=ModalRoute.of(context)!.settings.arguments as String;
+    return Scaffold(
+      body:Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(name),
+            ElevatedButton(onPressed: (){
+              Navigator.pushNamed(context,'/settings');
+            }, child: Text("SettingsScreen"))
+          ],
+        ),
+      ),
+    );
+  }
+
+}
+class SettingScreen extends StatelessWidget{
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: Center(
+        child:ElevatedButton(onPressed: (){
+          Navigator.popUntil(context,(route)=>route.isFirst);
+        }, child: Text("HomeScreen")),
+      ),
+    );
+  }
+}
