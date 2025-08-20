@@ -1,0 +1,39 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+void main()=> runApp(MyApp());
+
+class MyApp extends StatelessWidget{
+  Widget build(BuildContext context){
+    return MaterialApp(home: BottomNavigation());
+  }
+}
+class BottomNavigation extends StatefulWidget{
+  _BottomNavigation createState()=> _BottomNavigation();
+}
+class _BottomNavigation extends State<BottomNavigation>{
+  var currentIndex=0;
+  List<Widget> widgets =[Center(child: Text("Home Screen"),),DefaultTabController(length: 2, child:Scaffold(appBar:(AppBar(bottom:TabBar(tabs: [
+    Tab(icon:Icon(Icons.food_bank),text:"Food",)
+    ,Tab(icon: Icon(Icons.local_drink),text:"Drinks",)
+  ]))) ,body: TabBarView(children: [
+    Text("Pizza,burger,fries,sandwich,hotdog"),
+    Text("Coke,Pepsi,Sosyo,Mazza,Fenta")
+  ]),)),Center(child: Text("ProfileScreen"),)];
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: widgets[currentIndex],
+      bottomNavigationBar: BottomNavigationBar(currentIndex:currentIndex,onTap:(index){
+        setState(() {
+          currentIndex=index;
+        });
+      },items:[
+        BottomNavigationBarItem(icon: Icon(Icons.home),label:"home"),
+        BottomNavigationBarItem(icon: Icon(Icons.explore),label:"explore"),
+        BottomNavigationBarItem(icon: Icon(Icons.person),label:"profile"),
+      ]
+      ),
+    );
+  }
+
+}
