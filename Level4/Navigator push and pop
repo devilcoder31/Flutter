@@ -1,0 +1,65 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+void main()=> runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  Widget build(BuildContext context){
+    return MaterialApp(
+      home:HomeScreen()
+    );
+  }
+}
+class HomeScreen extends StatelessWidget{
+  TextEditingController controler=TextEditingController();
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: Center(child:Column(mainAxisAlignment:MainAxisAlignment.center,children: [ TextField(
+        controller:controler ,
+        decoration: InputDecoration(
+          hint:Text("Enter name")
+              ,border:OutlineInputBorder(
+          borderSide:BorderSide(color: Colors.black,width: 2),
+        )
+        ),
+      ),
+      ElevatedButton(onPressed: (){
+        if(controler.text== null){
+          ScaffoldMessenger.of(context).showSnackBar(new SnackBar(content: Text("Plaease enter name")));
+        }else{
+        Navigator.push(context,MaterialPageRoute(builder: (context)=>ProfileScreen(controler.text)));}
+      }, child: Text("ProfileScreen"))],
+    )));
+  }
+}
+class ProfileScreen extends StatelessWidget{
+  String name="";
+  ProfileScreen(this.name);
+  Widget build(BuildContext context){
+    return Scaffold(
+      body:Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(name),
+            ElevatedButton(onPressed: (){
+              Navigator.push(context,MaterialPageRoute(builder: (context)=>SettingScreen()));
+            }, child: Text("SettingsScreen"))
+          ],
+        ),
+      ),
+    );
+  }
+
+}
+class SettingScreen extends StatelessWidget{
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: Center(
+        child:ElevatedButton(onPressed: (){
+          Navigator.popUntil(context,(route)=>route.isFirst);
+        }, child: Text("HomeScreen")),
+      ),
+    );
+  }
+}
