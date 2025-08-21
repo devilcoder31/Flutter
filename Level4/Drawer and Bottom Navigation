@@ -1,0 +1,67 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+void main()=> runApp(MyApp());
+class MyApp extends StatelessWidget{
+  Widget build(BuildContext context){
+    return MaterialApp(
+      initialRoute: '/',
+      routes:{
+        '/search':(context)=>Search(),
+        '/profile':(context)=>Profile()
+      },
+      home: Home(),
+    );
+  }
+}
+class Home extends StatefulWidget{
+  _Home createState()=> _Home();
+}
+class _Home extends State<Home>{
+  var currentIndex=0;
+  List<Widget> widgets =[Center(child:Text("Home")),Center(child:Text("Search")),Center(child:Text("Profile"))];
+  Widget build(BuildContext context){
+    return Scaffold(
+      appBar:AppBar(title: Text("My Drawer App")),
+      drawer:Drawer(
+        child:ListView(
+          children: [
+            UserAccountsDrawerHeader(accountName: Text("Shiv"), accountEmail:Text("shiv31desaiis@gmail.com")),
+            ListTile(leading: Icon(Icons.home),title:Text("Home"),onTap: (){
+              ScaffoldMessenger.of(context).showSnackBar(new SnackBar(content: Text("Home Clicked"),));
+            },),
+            ListTile(leading: Icon(Icons.supervised_user_circle),title:Text("Profile"),onTap:(){
+              ScaffoldMessenger.of(context).showSnackBar(new SnackBar(content: Text("Profile Clicked")));
+            },),
+            ListTile(leading: Icon(Icons.settings),title:Text("Settings"),onTap:(){
+              ScaffoldMessenger.of(context).showSnackBar(new SnackBar(content: Text("Settings Clicked")));
+            },),
+            ListTile(leading: Icon(Icons.logout),title:Text("Logout"),onTap:(){
+              ScaffoldMessenger.of(context).showSnackBar(new SnackBar(content: Text("Logout Clicked")));
+            },),
+          ],
+        )
+      ),
+      body:widgets[currentIndex] ,
+      bottomNavigationBar: BottomNavigationBar(currentIndex:currentIndex ,items: [
+        BottomNavigationBarItem(icon:Icon(Icons.home) ,label:"home" ),
+        BottomNavigationBarItem(icon: Icon(Icons.search),label:"search"),
+        BottomNavigationBarItem(icon: Icon(Icons.supervised_user_circle_rounded),label:"Profile")
+      ],onTap:(index){
+        setState(() {
+          currentIndex=index;
+        });
+      },),
+    );
+  }
+}
+class Search extends StatelessWidget{
+  Widget build(BuildContext context){
+    return Scaffold();
+  }
+}
+class Profile extends StatelessWidget{
+  Widget build(BuildContext context){
+    return Scaffold();
+  }
+}
