@@ -1,0 +1,187 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:myapp/Modules/Products.dart';
+
+final currentIndex =0;
+class bottomBar {
+
+
+  Widget getBottomBar(){
+    return BottomNavigationBar(currentIndex:currentIndex,items:[
+
+    BottomNavigationBarItem(icon:Icon(Icons.home),label:"home"),
+    BottomNavigationBarItem(icon:Icon(Icons.supervised_user_circle),label:"profile"),
+    BottomNavigationBarItem(icon:Icon(Icons.category),label:"categories")
+    ], );
+  }
+}
+
+void main()=> runApp(MyApp());
+class MyApp extends StatelessWidget{
+  Widget build(BuildContext context){
+    return MaterialApp(
+
+      home: SplashScreen(),
+    );
+  }
+}
+class SplashScreen extends StatefulWidget{
+  _SplashScreen createState()=> _SplashScreen();
+}
+class _SplashScreen extends State<SplashScreen>{
+  var currentIndex=0;
+  List<Widget> widgets=[HomeScreen(),Profile(),Categories()];
+  Widget build(BuildContext context){
+    return Scaffold(
+      appBar: AppBar(
+        title:Text("MiniShop"),
+      ),
+      drawer:Drawer(child: ListView(children: [
+        UserAccountsDrawerHeader(accountEmail: Text("shiv31desaiis@gmail.com"), accountName:Text("shiv"),),
+        ListTile(title:Text("Home"),leading:Icon(Icons.home),onTap:(){
+
+        },),
+        ListTile(title:Text(" Categories"),leading:Icon(Icons.category),onTap:(){
+
+        },),
+        ListTile(title:Text("Profile"),leading:Icon(Icons.verified_user),onTap:(){
+
+        },),
+        ListTile(title:Text("Setting"),leading:Icon(Icons.settings),onTap:(){
+            Navigator.push(context,MaterialPageRoute(builder:(context)=> Settings()));
+        },),
+        ListTile(title:Text("LogOut"),leading:Icon(Icons.logout),onTap:(){
+
+        },),
+      ],),),
+      body:widgets[currentIndex],
+      bottomNavigationBar: BottomNavigationBar(currentIndex:currentIndex,items:[
+
+        BottomNavigationBarItem(icon:Icon(Icons.home),label:"home"),
+        BottomNavigationBarItem(icon:Icon(Icons.supervised_user_circle),label:"profile"),
+        BottomNavigationBarItem(icon:Icon(Icons.category),label:"categories")
+      ],onTap:(index){
+        setState(() {
+        currentIndex=index;
+
+         });
+      },),
+    );
+  }
+}
+class HomeScreen extends StatelessWidget{
+
+List<Products> products=[new Products('Pizza',300,'https://upload.wikimedia.org/wikipedia/commons/9/91/Pizza-3007395.jpg'),new Products('Burger', 200, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGyN-gzMYCBG7lK81HhtU4ZOOzuFAXW4itFyaAvSeH4WBaHtcfpNKed45IFeCO7WtFsbQ&usqp=CAU'),new Products('Biryani',900, 'https://www.thehosteller.com/_next/image/?url=https%3A%2F%2Fstatic.thehosteller.com%2Fhostel%2Fimages%2Fimage.jpg%2Fimage-1744199226259.jpg&w=2048&q=75'),new Products('Coke',230,'https://cloudfront-eu-central-1.images.arcpublishing.com/williamreed/DI3XSD7TIVI6TP56HGFBGHDU3Y.jpg')
+,new Products('Beer', 1009,'https://mansionz.in/cdn/shop/files/TUBORGSTRONGBEER.jpg?v=1715692447&width=320'),new Products('OreoShake', 150,'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQHI8NAZYtnku8vmrhEBZ4he9x0WHp3xm2vp-kjpVeZ68YOQnC4ReKdKjD2Uvp66j3YYgo&usqp=CAU')
+];
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: GridView.builder(gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount:3,crossAxisSpacing:2,mainAxisSpacing: 20),itemCount:products.length,
+          itemBuilder:(context,index){
+              return Card(elevation:2,child: Column(children: [
+                Text(products[index].name),
+                Flexible(child: Image.network(products[index].imageUrl))
+                ,Text(products[index].price.toString()),
+              ],),);
+          }),
+    );
+  }
+}
+class Categories extends StatefulWidget{
+  _Categories createState() => _Categories();
+}
+class _Categories extends State<Categories>{
+  List<String>? selectedCategories;
+  var isSelect=false;
+  List<String> productList=[];
+  Map<String,List<String>> map={'Electronics':['TV','Remote'],'Fashion':['Shirt','Jeans'],'Books':['Harry poterr'],'Sports':['Cricket','Football']};
+  List<String> items=['Electronics','Fashion','Books','Sports'];
+  Set<String> set={};
+  Widget build(BuildContext context){
+    selectedCategories=set !=null ? set.toList() : [];
+    return Scaffold(
+      appBar:AppBar(title:Text("Categories"),),
+      body: Column(mainAxisAlignment:MainAxisAlignment.center,crossAxisAlignment:CrossAxisAlignment.center,children: [Wrap(
+        spacing: 10,
+        children:items.map((val){
+          if(set.contains(val)){
+            isSelect = true;
+          }else{
+            isSelect=false;
+          }
+          return ChoiceChip(label:Text(val), selected:isSelect,selectedColor: Colors.blue,onSelected:(isAdded){setState(() {
+
+            if(isAdded){
+              set.add(val);
+            }else{
+              set.remove(val);
+            }
+          });
+          },);}).toList()
+
+      ),
+         Flexible(child:
+         ListView(
+           children: selectedCategories!.map((val){
+             return ListTile(
+               title: Column(
+                 children: [Text(val,style: TextStyle(fontWeight: FontWeight.bold),)]+map[val]!.map((val){
+                   return Text(val);
+                 }).toList(),
+               ),
+             );
+           }).toList(),
+         ))
+
+          ])
+
+    );
+  }
+}
+class Profile extends StatelessWidget{
+  Widget build(BuildContext context){
+    return Scaffold(
+      body:Center(child:Expanded(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+
+          children: [
+            CircleAvatar(radius:80,backgroundImage:NetworkImage('https://static.independent.co.uk/s3fs-public/thumbnails/image/2012/04/26/18/Untitled-5.jpg?quality=75&width=1250&crop=3%3A2%2Csmart&auto=webp'))
+          ,SizedBox(height:50),Text('Hulk',style: TextStyle(
+              fontSize:24
+            ),),SizedBox(height:50),Text('HulkSmash@gmail.com'),SizedBox(height:50),ElevatedButton(onPressed:(){
+               showDialog(
+                 context: context,
+                builder:(BuildContext context){ return AlertDialog(
+                  title: Text("Edit Profile Coming Soon"),
+                );}
+              );
+            }, child:Text("Edit Profile"))
+          ],
+        )),
+      ),
+    );
+  }
+
+}
+class Settings extends StatefulWidget{
+  _Settings createState() => _Settings();
+}
+class _Settings extends State<Settings>{
+  bool currvalue=false;
+  Widget build(BuildContext context){
+    return Scaffold(
+      bottomNavigationBar: bottomBar().getBottomBar(),
+      body: Center(
+        child: Switch(value: currvalue, onChanged:(val){
+          setState(() {
+            currvalue=val;
+
+          });
+        }),
+      ),
+    );
+  }
+}
