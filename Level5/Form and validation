@@ -1,0 +1,138 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:myapp/Modules/Products.dart';
+
+void main()=> runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  Widget build(BuildContext context){
+    return MaterialApp(
+      home: HomeScreen(),
+    );
+  }
+}
+class HomeScreen extends StatefulWidget{
+  _HomeScreen createState() => _HomeScreen();
+}
+class _HomeScreen extends State<HomeScreen>{
+  TextEditingController emailController=TextEditingController();
+  TextEditingController pass=TextEditingController();
+  FocusNode f1=FocusNode();
+  FocusNode f2=FocusNode();
+  var viewPass=true;
+  var key=GlobalKey<FormState>();
+  TextEditingController name=TextEditingController();
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: SingleChildScrollView(
+       child: Form(
+         key: key,
+       child: Center(
+         child:Container(
+           margin:EdgeInsets.only(top: 50),
+           padding: EdgeInsets.all(16),
+           child:Column(
+             mainAxisAlignment: MainAxisAlignment.center,
+             crossAxisAlignment: CrossAxisAlignment.center,
+             spacing:12,
+             children: [
+               TextFormField(
+                 decoration: InputDecoration(
+                   hint:Text("name")
+                       ,border: OutlineInputBorder()
+                 ),
+                 textInputAction: TextInputAction.next,
+                 onFieldSubmitted:(_){
+                   FocusScope.of(context).requestFocus(f2);
+                 },
+                 autovalidateMode: AutovalidateMode.onUserInteraction,
+                 focusNode: f1,
+                 validator:(val){
+                   if(val!.length >3 ){
+                     return null;
+                   }
+                   else{
+                     return "smaller than 3";
+                   }
+                 },
+                 textCapitalization: TextCapitalization.characters,
+                 controller: name,
+               ),
+               TextFormField(
+
+                 focusNode: f2,
+                 autovalidateMode: AutovalidateMode.onUserInteraction,
+                 decoration: InputDecoration(hint: Text("email"),border: OutlineInputBorder()),
+                 validator: (val){
+                   if(val!.contains('@')){
+                     return null;
+                   }
+                   else{
+                     return "please enter valid email";
+                   }
+                 },
+               )
+               ,TextFormField(
+                 autovalidateMode: AutovalidateMode.onUserInteraction,
+                 obscureText: viewPass,
+                 decoration: InputDecoration(
+                   border:OutlineInputBorder(),
+                   suffixIcon: IconButton(icon: Icon(!viewPass ? Icons.visibility : Icons.visibility_off),onPressed:(){
+                     setState(() {
+                       viewPass= !viewPass;
+                     });
+                   },),
+                   hint:Text("password")
+                 ),
+                 validator:(val){
+                   if(val!.length <8){
+                     return "password cant  be smaller than 8 characters";
+                   }
+                   else if(RegExp(r'[A-Z]').hasMatch(val) && RegExp(r'[a-z]').hasMatch(val)&& RegExp(r'[^A-Za-z0-9]]').hasMatch(val)){
+                      return null;
+                   }
+                   else{
+                      return "password must contain \n Uppercase \n Lowercase \n special character";
+                   }
+                 },
+                 textInputAction: TextInputAction.done,
+                 controller: pass,
+               ),
+               TextFormField(
+                 decoration: InputDecoration(
+                   hint:Text("confirm password") ,
+                   border: OutlineInputBorder()
+                 ),
+                 validator:(val){
+                   if(pass.text.compareTo(val!)!=0){
+                     return "Password doesnt match";
+                   }
+                   else{
+                     return null;
+                   }
+                 },
+               ),
+               Row(
+                 mainAxisAlignment: MainAxisAlignment.center,
+                 children: [ElevatedButton(onPressed:(){
+                   if(key.currentState!.validate()){
+                     ScaffoldMessenger.of(context).showSnackBar(new SnackBar(content: Text("Account created for ${name.text} with id ${emailController.text}")));
+                   }else{
+                     ScaffoldMessenger.of(context).showSnackBar(new SnackBar(content: Text("enter valid details")));
+                   }
+                 }, child: Text("submit")),
+                 SizedBox(width: 20,),
+                 ElevatedButton(onPressed: (){
+                   key.currentState!.reset();
+                 }, child:Text("reset"))
+                 ],
+               )
+             ],
+           ),
+         ) ,
+       ),
+      )),
+    );
+  }
+}
