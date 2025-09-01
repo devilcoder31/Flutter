@@ -1,0 +1,92 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:myapp/Modules/Products.dart';
+
+void main()=> runApp(MyApp());
+
+class MyApp extends StatelessWidget{
+  Widget build(BuildContext context){
+    return MaterialApp(
+      home: HomeScreen(),
+    );
+  }
+}
+class HomeScreen extends StatefulWidget{
+  _HomeScreen createState() => _HomeScreen();
+}
+class _HomeScreen extends State<HomeScreen>{
+  var f1=FocusNode();
+  var f2=FocusNode();
+  var f3=FocusNode();
+  TextEditingController name=TextEditingController();
+  var email =TextEditingController();
+  var pass =TextEditingController();
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: Form(child: Center(
+        child: Container(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            spacing: 12,
+            children: [
+              TextFormField(
+                focusNode: f1,
+                controller: name,
+                textInputAction:TextInputAction.next,
+                onFieldSubmitted:(val){
+                  FocusScope.of(context).requestFocus(f2);
+                },
+                decoration:InputDecoration(
+                  hint:Text("name"),
+                  border: OutlineInputBorder(),
+                  suffixIcon:GestureDetector(
+                    onTap:(){name.clear();} ,
+                    child:Icon(Icons.clear),
+
+                  )
+                ),
+                onChanged:(val){
+                  setState(() {
+
+                  });
+                },
+                autofocus: true,
+              ),
+              Text("you typed : ${name.text}"),
+              TextFormField(
+                focusNode: f2,
+                controller: email,
+                textInputAction:TextInputAction.next,
+                onFieldSubmitted:(val){
+                  FocusScope.of(context).requestFocus(f3);
+                },
+                decoration:InputDecoration(
+                    hint:Text("email")
+                        ,border: OutlineInputBorder()
+                ),
+              ),
+              TextFormField(
+                textInputAction:TextInputAction.done,
+                onTap:(){
+                    FocusScope.of(context).unfocus();
+                },
+                focusNode: f3,
+                controller: pass,
+                decoration:InputDecoration(
+                    hint:Text("password"),
+                  border: OutlineInputBorder()
+                ),
+
+              ),
+              ElevatedButton(onPressed: (){
+                print("${name.text},${email.text},${pass.text}");
+              }, child:Text("Submit"))
+            ],
+          ),
+        ),
+      )),
+    );
+  }
+}
