@@ -1,0 +1,67 @@
+import 'dart:async';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:myapp/Modules/Products.dart';
+
+void main()=> runApp(MyApp());
+
+class MyApp extends StatelessWidget{
+  Widget build(BuildContext context){
+    return MaterialApp(
+      home: MainScreen(),
+    );
+  }
+}
+class MainScreen extends StatefulWidget
+{
+  _MainScreen createState() => _MainScreen();
+}
+class _MainScreen extends State<MainScreen>{
+  int counter=0;
+  void add(){
+    setState(() {
+      counter++;
+    });
+  }
+  void sub(){
+    setState(() {
+      counter--;
+    });
+  }
+  TextEditingController controller=TextEditingController();
+  String currentString="";
+  void getString(String string){
+    setState(() {
+      currentString=string;
+    });
+  }
+  Widget build(BuildContext context){
+
+    return Scaffold(
+      body:Center(child:Container(width:double.infinity ,height:150,child:  Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          CustomTextField(onChange: getString, controller:controller ),
+          ElevatedButton(onPressed: (){
+            ScaffoldMessenger.of(context).showSnackBar(new SnackBar(content: Text(currentString)));
+          }, child:Text("submit"))
+        ],
+      ))),
+    );
+  }
+}
+class CustomTextField extends StatelessWidget{
+   ValueChanged<String> onChange;
+  TextEditingController controller;
+  CustomTextField({required this.onChange,required this.controller});
+  Widget build(BuildContext context){
+    return TextFormField(
+      decoration: InputDecoration(border: OutlineInputBorder()),
+      onChanged: onChange,
+      controller: controller,
+    );
+  }
+}
