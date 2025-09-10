@@ -1,0 +1,60 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:myapp/Modules/Products.dart';
+
+void main()=> runApp(MyApp());
+
+class MyApp extends StatelessWidget{
+  Widget build(BuildContext context){
+    return MaterialApp(
+      home: MainScreen(),
+    );
+  }
+}
+class MainScreen extends StatefulWidget
+{
+  _MainScreen createState() => _MainScreen();
+}
+class _MainScreen extends State<MainScreen>{
+  int counter=0;
+  void add(){
+    setState(() {
+      counter++;
+    });
+  }
+  void sub(){
+    setState(() {
+      counter--;
+    });
+  }
+  Widget build(BuildContext context){
+    return Scaffold(
+      body:Center(child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          addButton(label: "add",onClick: add),
+          decreaseButton(label:"decrease",onClick:sub),
+          Text(counter.toString())
+        ],
+      )),
+    );
+  }
+}
+class addButton extends StatelessWidget{
+  String label;
+  VoidCallback onClick;
+  addButton({required this.label,required this.onClick});
+  Widget build(BuildContext context){
+    return ElevatedButton(onPressed:onClick, child:Text(label));
+  }
+}
+class decreaseButton extends StatelessWidget{
+  String label;
+  VoidCallback onClick;
+  decreaseButton({required this.label,required this.onClick});
+  Widget build(BuildContext context){
+    return ElevatedButton(onPressed:onClick, child:Text(label));
+  }
+}
