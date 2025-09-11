@@ -1,0 +1,71 @@
+//main. dart
+  import 'dart:async';
+
+  import 'package:flutter/cupertino.dart';
+  import 'package:flutter/material.dart';
+  import 'package:flutter/widgets.dart';
+import 'package:myapp/Modules/CounterProvider.dart';
+  import 'package:myapp/Modules/Products.dart';
+  import 'package:provider/provider.dart';
+ void main(){
+   runApp(ChangeNotifierProvider(create:(_)=> CounterProvider() ,child: MaterialApp(home: FirstScreen(),),));
+ }
+ class FirstScreen extends StatefulWidget{
+   _FirstScreen createState()=> _FirstScreen();
+ }
+ class _FirstScreen extends State<FirstScreen>{
+   Widget build(BuildContext context){
+     var provider =Provider.of<CounterProvider>(context);
+     return Scaffold(
+       body:Center(
+         child: Column(
+           mainAxisAlignment: MainAxisAlignment.center,
+           crossAxisAlignment: CrossAxisAlignment.center,
+           children: [
+              Text(provider.counter.toString()),
+             ElevatedButton(onPressed: provider.increment, child:Text("+")),
+             ElevatedButton(onPressed: provider.decrement, child: Text("-")),
+             ElevatedButton(onPressed: (){
+               Navigator.push(context,MaterialPageRoute(builder: (context)=>SecondScreen()));
+             }, child:Text("Go to 2nd screen"))
+           ],
+         ),
+       ),
+     );
+   }
+ }
+ class SecondScreen extends StatelessWidget{
+   Widget build(BuildContext context){
+     var provider=Provider.of<CounterProvider>(context);
+     return Scaffold(
+       body:Center(
+         child: Column(
+           mainAxisAlignment: MainAxisAlignment.center,
+           crossAxisAlignment: CrossAxisAlignment.center,
+           children: [
+             Text(provider.counter.toString()),
+             ElevatedButton(onPressed: (){
+               Navigator.pop(context);
+             }, child:Text("Go back to first screen"))
+           ],
+         ),
+       ),
+     );
+   }
+ }
+
+//CounterProvider.dart
+
+import 'package:flutter/material.dart';
+
+class CounterProvider extends ChangeNotifier{
+  int counter =0;
+  void increment(){
+    counter++;
+    notifyListeners();
+  }
+  void decrement(){
+    counter--;
+    notifyListeners();
+  }
+}
