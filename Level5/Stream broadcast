@@ -1,0 +1,65 @@
+    import 'dart:async';
+
+    import 'package:flutter/cupertino.dart';
+    import 'package:flutter/material.dart';
+    import 'package:flutter/widgets.dart';
+  import 'package:myapp/Modules/CounterProvider.dart';
+    import 'package:myapp/Modules/Products.dart';
+    import 'package:provider/provider.dart';
+   void main(){
+     runApp(MaterialApp(home: MyApp()));
+   }
+   int counter=1;
+   StreamController<int> controller = StreamController<int>.broadcast();
+   void counterSender() async{
+     while(counter<11){
+        await Future.delayed(Duration(seconds: 1));
+        controller.sink.add(counter);
+        counter++;
+     }
+     controller.sink.add(-1);
+
+   }
+   class MyApp extends StatelessWidget{
+     Widget build(BuildContext context){
+       return Scaffold(
+         body:FirstScreen(),
+       );
+     }
+   }
+   class FirstScreen extends StatefulWidget{
+     _FirstScreen createState()=> _FirstScreen();
+   }
+   class _FirstScreen extends State<FirstScreen>{
+     Widget build(BuildContext context){
+       return Center(
+         child:Column(mainAxisAlignment:MainAxisAlignment.center , crossAxisAlignment:CrossAxisAlignment.center,children:[StreamBuilder<int>(stream:controller.stream, builder:(context,snapshot){
+          if(snapshot.connectionState ==ConnectionState.waiting){
+            return CircularProgressIndicator();
+          }
+          else if(!snapshot.hasData ){
+            return Text('waiting for data');
+          }
+          else if(snapshot.hasError){
+            return Text('error occured');
+          }
+          return snapshot.data !=-1  ?Text(snapshot.data.toString()): Text('Done!');
+         })
+         ,
+         ElevatedButton(onPressed: counterSender, child:Text('action')),
+           StreamBuilder<int>(stream:controller.stream, builder:(context,snapshot){
+             if(snapshot.connectionState ==ConnectionState.waiting){
+               return CircularProgressIndicator();
+             }
+             else if(!snapshot.hasData ){
+               return Text('waiting for data');
+             }
+             else if(snapshot.hasError){
+               return Text('error occured');
+             }
+             return snapshot.data !=-1  ?Text(snapshot.data.toString()): Text('Done!');
+           })
+         ] ),
+       );
+     }
+   }
