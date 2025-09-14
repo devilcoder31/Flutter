@@ -1,0 +1,208 @@
+main.dart:
+    import 'dart:async';
+
+    import 'package:flutter/cupertino.dart';
+    import 'package:flutter/material.dart';
+    import 'package:flutter/widgets.dart';
+  import 'package:myapp/Modules/CounterProvider.dart';
+    import 'package:myapp/Modules/Products.dart';
+    import 'package:provider/provider.dart';
+
+import 'Modules/Tasks.dart';
+   void main(){
+     runApp(ChangeNotifierProvider(create:(_)=> Tasks(),child:HomeScreen(),));
+   }
+   StreamController streamController = StreamController();
+   Stream<String> sendNoti(BuildContext context) async*{
+
+     Future.delayed(Duration(seconds: 10));
+     if(Provider.of<Tasks>(context).completedTasks.isNotEmpty)
+     yield "complete tasks";
+   }
+   int currIndex=0;
+   class bottomNav extends StatelessWidget{
+
+     ValueChanged<int> onChanged;
+     bottomNav({ required this.onChanged});
+     Widget build(BuildContext context){
+    return BottomNavigationBar(currentIndex:currIndex,items:[
+     BottomNavigationBarItem(icon:Icon(Icons.stay_current_landscape_outlined),label:'current tasks'),
+     BottomNavigationBarItem(icon: Icon(Icons.delete),label:'deleted tasks'),BottomNavigationBarItem(icon:Icon(Icons.incomplete_circle),label:"completed task")],onTap:(index)=> onChanged(index));
+   }}
+   class HomeScreen extends StatelessWidget{
+     Widget build(BuildContext context){
+       return MaterialApp(
+         home:SubScreen(),
+       );
+     }
+   }
+   class SubScreen extends StatefulWidget{
+     _SubScreen createState()=> _SubScreen();
+   }
+   class _SubScreen extends State<SubScreen>{
+
+     void onChanged(int index) async{
+       setState(() {
+         currIndex=index;
+       });
+       if(index ==1 ){
+          var result =  Navigator.pushReplacement(context,MaterialPageRoute(builder:(context)=> AddTaskScreen()));
+
+
+
+       }
+       else if(index ==2){
+         var result =  Navigator.pushReplacement(context,MaterialPageRoute(builder:(context)=> CompletedTasks()));
+       }
+
+     }
+     Widget build(BuildContext context){
+       var provider=Provider.of<Tasks>(context);
+       return Scaffold(
+         body:Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+           crossAxisAlignment: CrossAxisAlignment.center,
+           children: [
+             Expanded(child: ListView.builder(itemCount:provider.currentTasks.length,itemBuilder:(context,index){
+               return Card(child: ListTile(leading:Checkbox(value:provider.completedTasks.contains(provider.currentTasks[index]), onChanged:(val){
+                 if(val!){
+                   setState(() {
+                     provider.completedTask(index);
+                   });
+
+                 }
+               }),title: Text(provider.currentTasks[index]),trailing: ElevatedButton(onPressed:(){
+                 provider.deleteTask(index);
+               }, child:Text("delete"),style:ButtonStyle(
+                 backgroundColor:MaterialStateProperty.all(Colors.redAccent),
+               )),),elevation: 5,);
+             })),
+           StreamBuilder(stream:sendNoti(context), builder:(context,snapshot){
+             Future.microtask((){
+               ScaffoldMessenger.of(context).showSnackBar(new SnackBar(content:Text(snapshot.data!)));
+             });
+             return Container();
+           })
+           ],
+         ) ,
+         bottomNavigationBar: bottomNav( onChanged: onChanged),
+         floatingActionButton: FloatingActionButton(child:Text("+"),onPressed:(){
+           showDialog(context: context, builder:(context){
+             TextEditingController controller = TextEditingController();
+             return AlertDialog(
+               title:Text("add task"),
+               content:Column(
+                 mainAxisAlignment: MainAxisAlignment.center,
+                 crossAxisAlignment: CrossAxisAlignment.center,
+                 children: [
+                   TextFormField(
+                     controller: controller,
+                     decoration: InputDecoration(
+                       border: OutlineInputBorder()
+                     ),
+                   ),
+                   ElevatedButton(onPressed:(){Provider.of<Tasks>(context,listen: false).addTask(controller.text);
+                     Navigator.pop(context);
+                     }, child:Text("add"))
+                 ],
+               ),
+             );
+           });
+         }),
+       );
+     }
+   }
+   class AddTaskScreen extends StatefulWidget{
+     _AddTaskScreen createState() => _AddTaskScreen();
+   }
+   class _AddTaskScreen extends State<AddTaskScreen>{
+
+     void onChanged(int index){
+       setState(() {
+         currIndex=index;
+       });
+       if(currIndex==0){
+         Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=> HomeScreen()));
+       }
+       else if(index ==2){
+         Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=> CompletedTasks()));
+       }
+     }
+     Widget build(BuildContext){
+       var provider = Provider.of<Tasks>(context);
+       return Scaffold(
+         body: Center(
+           child:Column(
+             mainAxisAlignment: MainAxisAlignment.center,
+             crossAxisAlignment: CrossAxisAlignment.center,
+             children: [
+               Expanded(child:
+               ListView.builder(itemBuilder:(context,index){
+                 return  Card(child:ListTile(
+                   title:Text(provider.deletedTasks[index])
+                 ),elevation: 5,);
+               },itemCount:provider.deletedTasks.length ,)
+               ) ],
+           )
+         ),
+         bottomNavigationBar: bottomNav( onChanged: onChanged),
+       );
+     }
+   }
+   class CompletedTasks extends StatefulWidget{
+     _CompletedTasks createState() => _CompletedTasks();
+   }
+   class _CompletedTasks extends State<CompletedTasks>{
+     void onChanged(int index){
+       setState(() {
+         currIndex=index;
+       });
+       if(currIndex==0){
+         Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=> HomeScreen()));
+       }
+       else if(index ==1){
+         Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=> AddTaskScreen()));
+       }
+     }
+     Widget build(BuildContext context){
+       var provider = Provider.of<Tasks>(context);
+       return Scaffold(
+          bottomNavigationBar: bottomNav(onChanged: onChanged),
+         body:Column(
+           mainAxisAlignment: MainAxisAlignment.center,
+           crossAxisAlignment: CrossAxisAlignment.center,
+           children: [
+             Expanded(child: ListView.builder(itemCount:provider.completedTasks.length,itemBuilder:(context,index){
+               return Card(child: ListTile(title: Text(provider.completedTasks[index]),),elevation: 5,);
+             })),
+           ],
+         ) ,
+       );
+     }
+   }
+
+
+Tasks.dart
+  import 'package:flutter/cupertino.dart';
+
+  class Tasks extends ChangeNotifier{
+    Tasks();
+    List<String> currentTasks=[];
+    List<String> deletedTasks=[];
+    List<String> completedTasks=[];
+    void addTask(String task){
+      currentTasks.add(task);
+      notifyListeners();
+    }
+    void deleteTask(int index){
+      deletedTasks.add(currentTasks[index]);
+      currentTasks.removeAt(index);
+      notifyListeners();
+    }
+    void completedTask(int index){
+      completedTasks.add(currentTasks[index]);
+      currentTasks.removeAt(index);
+      notifyListeners();
+    }
+
+  }
