@@ -1,0 +1,83 @@
+import 'dart:convert';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'Services.dart';
+
+void main() => runApp(MyApp());
+class MyApp extends StatelessWidget{
+  Widget build(BuildContext context){
+    return MaterialApp(
+      home: ListScreen(),
+    );
+  }
+}
+class ListScreen extends StatefulWidget{
+  _ListScreen createState() => _ListScreen();
+}
+class _ListScreen extends State<ListScreen>{
+  void initState(){
+    super.initState();
+    fetchData();
+  }
+  List<dynamic> data=[];
+  var isLoading= true;
+  String errorMesage="";
+  void fetchData() async{
+    try {
+      Services service = Services();
+      var response = await service.getPosts();
+
+      if(response.statusCode==200){
+        data=jsonDecode(response.body);
+
+        setState(() {
+          isLoading=false;
+
+        });
+      }else{
+        setState(() {
+          errorMesage="Error : ${response.statusCode}";
+        });
+      }
+    }
+    catch(e){
+      setState(() {
+        errorMesage=e.toString();
+      });
+    }
+  }
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: Center(
+        child: isLoading? CircularProgressIndicator() : errorMesage.isNotEmpty ? Text(errorMesage):
+     ListView.builder(itemBuilder:(context,index){
+          return ListTile( title: Text(data[index]['title']),onTap: (){
+            Navigator.push(context,MaterialPageRoute(builder: (context)=> PostDetailPage(map:data[index])));
+          },);
+        },itemCount: data.length,),
+      ),
+    );
+  }
+}
+class PostDetailPage extends StatelessWidget{
+  var map= Map<String,dynamic>();
+  PostDetailPage({required this.map});
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: Center(
+        child: ListView(
+          children: map.entries.map((entry){
+            return ListTile(
+              title: Text('${entry.key}', style: TextStyle(fontWeight: FontWeight.bold)),
+              subtitle: Text('${entry.value}'),
+            );
+          }).toList(),
+        ),
+      ),
+
+    );
+  }
+}
