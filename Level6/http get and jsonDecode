@@ -1,0 +1,53 @@
+//Services.dart
+import 'package:http/http.dart' as http;
+
+class Services {
+  final baseUrl="https://jsonplaceholder.typicode.com/posts";
+  Future<http.Response> getPosts() async{
+    final url=Uri.parse(baseUrl);
+    final response = await  http.get(url);
+    return response;
+}
+}
+//main.dart
+import 'dart:convert';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+import 'Services.dart';
+
+void main(){
+  runApp(MyApp());
+}
+class MyApp extends StatefulWidget{
+  _MyApp createState() => _MyApp();
+}
+class _MyApp extends State<MyApp>{
+  void initState(){
+    super.initState();
+    fetchData();
+  }
+  void fetchData() async{
+    Services service = Services();
+    var response = await service.getPosts();
+    if(response.statusCode==200) {
+      List<dynamic> data = jsonDecode(response.body);
+      print("serviceCode : ${response.statusCode}");
+      print("body : ${response.body}");
+      print("first title : ${data[0]['title']}");
+    }else{
+      print("error occured");
+    }
+
+  }
+  Widget build(BuildContext context){
+    return MaterialApp(
+      home: Scaffold(
+        body: Center(
+          child: Text("check console for output"),
+        ),
+      ),
+    );
+  }
+}
