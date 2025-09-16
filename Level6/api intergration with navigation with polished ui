@@ -1,0 +1,62 @@
+import 'dart:convert';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'Services.dart';
+
+void main() => runApp(MyApp());
+class MyApp extends StatelessWidget{
+  Widget build(BuildContext context){
+    return MaterialApp(
+      home: ListScreen(),
+    );
+  }
+}
+class ListScreen extends StatelessWidget{
+  List<dynamic> data=[];
+  Services services= Services();
+  Future<List<dynamic>> future() async{
+    var  response = await services.getPosts();
+    if(response.statusCode==200){
+      data=jsonDecode(response.body)['products'];
+      return data;
+    }
+    throw Exception("error : ${response.statusCode}");
+  }
+  Widget build(BuildContext context){
+    return Scaffold(
+      body:Center(child:FutureBuilder(future: future(), builder:(context,snapshot){
+        if(snapshot.connectionState == ConnectionState.waiting){
+          return CircularProgressIndicator();
+        }
+        else if(snapshot.hasData){
+          var data= snapshot.data!;
+         return ListView.builder(itemCount:data.length,itemBuilder: (context,index){
+            return Card(child: Container(margin:EdgeInsets.all(2),padding:EdgeInsets.all(2),child:ListTile(leading:Image.network(data[index]['thumbnail']),title:Column(mainAxisAlignment: MainAxisAlignment.start,crossAxisAlignment: CrossAxisAlignment.center,children: [Text(data[index]['title']),Text(data[index]['price'].toString())],),onTap:(){
+              Navigator.push(context,MaterialPageRoute(builder:(context)=> SingleProduct(map:data[index])));
+            },),),elevation: 5);
+          });
+        }
+        else if(snapshot.hasError){
+          return Text(snapshot.error.toString());
+        }
+        return Text('no data');
+      }) ,
+    ));
+  }
+}
+class SingleProduct extends StatelessWidget{
+  var map=Map<String,dynamic>();
+  SingleProduct({required this.map});
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: ListView(
+        children: map.entries.map((entry){
+          return ListTile(title:Text(entry.key, style:TextStyle(fontWeight: FontWeight.bold),) ,subtitle: Text(entry.value.toString()),);
+        }).toList(),
+      ),
+    );
+  }
+}
