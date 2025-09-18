@@ -1,0 +1,125 @@
+//main.dart 
+  import 'dart:convert';
+
+  import 'package:flutter/cupertino.dart';
+  import 'package:flutter/material.dart';
+  import 'package:provider/provider.dart';
+
+  import 'Services.dart';
+
+  void main()=> runApp(MyApp());
+  class MyApp extends StatelessWidget{
+    Widget build(BuildContext context){
+      return MaterialApp(
+        home: Delete(),
+      );
+    }
+  }
+  class Delete extends StatefulWidget{
+    _Delete createState() => _Delete();
+  }
+  class _Delete extends State<Delete>{
+    int deletingIndex=-1;
+   var isDeleting = false;
+    var isUploading=false;
+    List<dynamic> data=[];
+    Future<void> getPost() async{
+      Services service = Services();
+      var response = await service.getPosts();
+      if(response.statusCode == 200){
+        setState(() {
+          data=jsonDecode(response.body)['products'];
+          print('data initialized');
+        });
+
+
+      }
+    }
+    Future<void> delete(int id ,int index) async{
+      print('recieved index=$id');
+
+      Services services = Services();
+      var deletedObject = data[index];
+      setState(() {
+        isDeleting=true;
+        deletingIndex=index;
+        data.removeAt(index);
+      });
+
+      var response = await services.delete(id);
+
+      setState(() {
+
+        isDeleting=false;
+      });
+      if(response.statusCode!= 200){
+        setState(() {
+          deletingIndex=-1;
+          data.insert(index,deletedObject);
+        });
+
+      }
+      else{
+        ScaffoldMessenger.of(context).showSnackBar(new SnackBar(content: Text('Deleted Successfully')));
+      }
+
+    }
+
+    void initState(){
+      getPost();
+      super.initState();
+    }
+    Widget build(BuildContext context){
+
+      return Scaffold(
+        body: Center(
+          child:Container(child:ListView.builder(itemCount:data.length,itemBuilder: (context,index){
+            return Card(elevation:2,child:ListTile(
+              leading:Image.network(data[index]['thumbnail'],),title:Text(data[index]['title']),
+              trailing:GestureDetector(child: isDeleting && deletingIndex == index ? CircularProgressIndicator() : Icon(Icons.delete,color: Colors.red,),onTap: (){
+                delete(data[index]['id'],index);
+
+              },),
+          ));}
+        ),
+      )));
+    }
+  }
+
+//Services.dart
+
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
+
+class Services {
+  final baseUrl="https://dummyjson.com/products?limit=10";
+  Future<http.Response> getPosts() async{
+    final url=Uri.parse(baseUrl);
+    final response = await  http.get(url);
+
+    return response;
+}
+  Future<Map<String,dynamic>> patchPost({required int id, required Map<String,dynamic> map})  async {
+    final payload= map;
+    final header={
+      'Content-Type':'application/json',
+      'Accept':'application/json'
+    };
+    final url=Uri.parse('$baseUrl/$id');
+    final response = await http.patch(url,body: jsonEncode(payload),headers: header);
+    print(response.statusCode);
+    if(response.statusCode==200 || response.statusCode==201){
+      return jsonDecode(response.body) as Map<String,dynamic>;
+    }
+    else{
+      throw Exception('Create failed : ${response.statusCode}${response.body}');
+    }
+  }
+  Future<http.Response> delete(int index) async{
+    final baseUrl="https://dummyjson.com/products/$index";
+       var url = Uri.parse('$baseUrl');
+       var response = http.delete(url);
+       return response;
+  }
+}
