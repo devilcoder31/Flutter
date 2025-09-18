@@ -1,0 +1,86 @@
+//main.dart 
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
+
+class Services {
+  final baseUrl="https://dummyjson.com/products?limit=10";
+  Future<http.Response> getPosts() async{
+    final url=Uri.parse(baseUrl);
+    final response = await  http.get(url);
+    if(response.statusCode==200){
+      return response;
+
+    }
+    else{
+      throw Exception('error: ${response.statusCode}');
+    }
+
+}
+  Future<Map<String,dynamic>> patchPost({required int id, required Map<String,dynamic> map})  async {
+    final payload= map;
+    final header={
+      'Content-Type':'application/json',
+      'Accept':'application/json'
+    };
+    final url=Uri.parse('$baseUrl/$id');
+    final response = await http.patch(url,body: jsonEncode(payload),headers: header);
+    print(response.statusCode);
+    if(response.statusCode==200 || response.statusCode==201){
+      return jsonDecode(response.body) as Map<String,dynamic>;
+    }
+    else{
+      throw Exception('Create failed : ${response.statusCode}${response.body}');
+    }
+  }
+  Future<http.Response> delete(int index) async{
+    final baseUrl="https://dummyjson.com/products/$index";
+       var url = Uri.parse('$baseUrl');
+       var response = http.delete(url);
+       return response;
+  }
+}
+
+//Services.dart
+
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
+
+class Services {
+  final baseUrl="https://dummyjson.com/products?limit=10";
+  Future<http.Response> getPosts() async{
+    final url=Uri.parse(baseUrl);
+    final response = await  http.get(url);
+    if(response.statusCode==200){
+      return response;
+
+    }
+    else{
+      throw Exception('error: ${response.statusCode}');
+    }
+
+}
+  Future<Map<String,dynamic>> patchPost({required int id, required Map<String,dynamic> map})  async {
+    final payload= map;
+    final header={
+      'Content-Type':'application/json',
+      'Accept':'application/json'
+    };
+    final url=Uri.parse('$baseUrl/$id');
+    final response = await http.patch(url,body: jsonEncode(payload),headers: header);
+    print(response.statusCode);
+    if(response.statusCode==200 || response.statusCode==201){
+      return jsonDecode(response.body) as Map<String,dynamic>;
+    }
+    else{
+      throw Exception('Create failed : ${response.statusCode}${response.body}');
+    }
+  }
+  Future<http.Response> delete(int index) async{
+    final baseUrl="https://dummyjson.com/products/$index";
+       var url = Uri.parse('$baseUrl');
+       var response = http.delete(url);
+       return response;
+  }
+}
