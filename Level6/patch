@@ -1,0 +1,87 @@
+// main.dart
+import 'dart:convert';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'Services.dart';
+
+void main()=> runApp(MyApp());
+class MyApp extends StatelessWidget{
+  Widget build(BuildContext context){
+    return MaterialApp(
+      home: Patch(),
+    );
+  }
+}
+class Patch extends StatefulWidget{
+  _Patch createState() => _Patch();
+}
+class _Patch extends State<Patch>{
+  var isUploading=false;
+  Map<String,dynamic> response={};
+  Future<void> patchPost({required int id, required Map<String,dynamic> map}) async{
+    Services services = Services();
+    setState(() {
+      isUploading=true;
+    });
+    response= await services.patchPost(id: id, map: map);
+    setState(() {
+      isUploading=false;
+    });
+    map=response;
+    ScaffoldMessenger.of(context).showSnackBar(new SnackBar(content: Text('title updated to  ${map['title']} ')));
+}
+TextEditingController controller = TextEditingController();
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            TextFormField(controller:controller,decoration: InputDecoration(
+              hint:Text('title'),
+              border: OutlineInputBorder(),
+
+            ),),
+            ElevatedButton(onPressed:isUploading ? null :(){patchPost(id: 1, map:{'title':controller.text});} , child:isUploading ? CircularProgressIndicator() : Text('submit'))
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+//Services.dart
+
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
+
+class Services {
+  final baseUrl="https://jsonplaceholder.typicode.com/posts";
+  Future<http.Response> getPosts() async{
+    final url=Uri.parse(baseUrl);
+    final response = await  http.get(url);
+
+    return response;
+}
+  Future<Map<String,dynamic>> patchPost({required int id, required Map<String,dynamic> map})  async {
+    final payload= map;
+    final header={
+      'Content-Type':'application/json',
+      'Accept':'application/json'
+    };
+    final url=Uri.parse('$baseUrl/$id');
+    final response = await http.patch(url,body: jsonEncode(payload),headers: header);
+    print(response.statusCode);
+    if(response.statusCode==200 || response.statusCode==201){
+      return jsonDecode(response.body) as Map<String,dynamic>;
+    }
+    else{
+      throw Exception('Create failed : ${response.statusCode}${response.body}');
+    }
+  }
+}
