@@ -1,0 +1,82 @@
+  import 'dart:async';
+import 'dart:convert';
+
+  import 'package:flutter/cupertino.dart';
+  import 'package:flutter/material.dart';
+  import 'package:provider/provider.dart';
+
+  import 'Services.dart';
+
+  void main()=> runApp(MyApp());
+  class MyApp extends StatelessWidget{
+    Widget build(BuildContext context){
+      return MaterialApp(
+        home: Refresh(),
+      );
+    }
+  }
+  class Refresh extends StatefulWidget{
+    _Refresh createState()=> _Refresh();
+  }
+  class _Refresh extends State<Refresh> {
+    Timer? timer;
+    var targetLikes=200;
+    var currentLikes=0;
+    var addReadction =0 ;
+    String status="";
+    void initState(){
+      super.initState();
+      firstFetch();
+      polling();
+    }
+    Future<void> firstFetch() async{
+      Services s = Services();
+      final response =await s.getPosts();
+      if(response.statusCode==200){
+        var data = jsonDecode(response.body);
+        setState(() {
+          currentLikes=data['reactions']['likes'];
+          status='current likes = $currentLikes';
+        });
+      }
+
+    }
+    Future<void> polling() async{
+      Services s= Services();
+      timer= Timer.periodic(Duration(seconds: 2),(timer) async {
+        if(currentLikes>= targetLikes){
+          timer.cancel();
+          return;
+        }else{
+          var response =await s.getPosts();
+          if(response.statusCode==200){
+            var data = jsonDecode(response.body);
+            int newLikes= data['reactions']['likes']+addReadction;
+            addReadction++;
+            if(newLikes >= targetLikes){
+              setState(() {
+                currentLikes=newLikes;
+                status="target reached : $currentLikes";
+              });
+             timer.cancel();
+             return;
+            }
+            setState(() {
+              currentLikes=newLikes;
+              status='current reactions : $currentLikes';
+            });
+          }
+        }
+      });
+
+    }
+    Widget build(BuildContext context){
+      return Scaffold(
+        body: Center(
+          child: Text(status),
+        ),
+      );
+    }
+
+
+  }
