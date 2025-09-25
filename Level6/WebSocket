@@ -1,0 +1,61 @@
+  import 'dart:async';
+import 'dart:convert';
+
+  import 'package:flutter/cupertino.dart';
+  import 'package:flutter/material.dart';
+  import 'package:provider/provider.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+
+  import 'Services.dart';
+
+ void main() => runApp(MyApp());
+
+ class MyApp extends StatelessWidget{
+   Widget build(BuildContext context){
+     return MaterialApp(home:FirstScreen());
+   }
+ }
+ class FirstScreen extends StatefulWidget{
+   _FirstScreen createState() => _FirstScreen() ;
+ }
+ class _FirstScreen extends State<FirstScreen>{
+   late WebSocketChannel channel;
+   String message="";
+   TextEditingController controller = TextEditingController();
+   List<String> messages=[];
+   void initState(){
+
+     super.initState();
+     print('init called');
+     channel = WebSocketChannel.connect(Uri.parse('wss://ws.ifelse.io/'));
+     channel.stream.listen((message){
+       print('text reciewb=ved');
+       setState(() {
+
+         messages.add(message);
+       });
+     });
+ }
+   Widget build(BuildContext context){
+     return Scaffold(
+       appBar: AppBar(title: Text("WebSockethii"),),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              TextFormField(controller: controller,decoration: InputDecoration(border: OutlineInputBorder()),),
+              ElevatedButton(onPressed:(){
+                channel.sink.add(controller.text);
+                print('text sent');
+              }, child:Text('submit')),
+
+            Flexible(child:  ListView.builder(itemBuilder: (context,index){
+              return ListTile(title: Text(messages[index]),);
+            },itemCount: messages.length,))
+            ],
+          ),
+        ),
+     );
+   }
+ }
