@@ -1,0 +1,164 @@
+//Service.dart
+import 'dart:convert';
+
+  import 'package:http/http.dart' as http;
+
+  class Services {
+    final baseUrl="https://newsdata.io/api/1/latest?apikey=pub_441e35bbdcf14f679108be3fc4ffe917&q=cricket&language=en";
+    Future<http.Response> getPosts(String? pageId) async{
+
+      var url= Uri.parse(baseUrl);
+      if(pageId != null){
+        url=Uri.parse('$baseUrl&page=$pageId');
+        print(url.toString());
+      }
+      final response = await  http.get(url);
+      if(response.statusCode==200){
+        print('response returned');
+        return response;
+
+      }
+      else{
+        throw Exception('error: ${response.statusCode}${response.body}');
+      }
+
+  }
+    Future<Map<String,dynamic>> patchPost({required int id, required Map<String,dynamic> map})  async {
+      final payload= map;
+      final header={
+        'Content-Type':'application/json',
+        'Accept':'application/json'
+      };
+      final url=Uri.parse('$baseUrl/$id');
+      final response = await http.patch(url,body: jsonEncode(payload),headers: header);
+      print(response.statusCode);
+      if(response.statusCode==200 || response.statusCode==201){
+        return jsonDecode(response.body) as Map<String,dynamic>;
+      }
+      else{
+        throw Exception('Create failed : ${response.statusCode}${response.body}');
+      }
+    }
+    Future<http.Response> delete(int index) async{
+      final baseUrl="https://dummyjson.com/products/$index";
+         var url = Uri.parse('$baseUrl');
+         var response = http.delete(url);
+         return response;
+    }
+
+//Main.dart
+
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+
+
+import 'Services.dart';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget{
+  Widget build(BuildContext context){
+    return MaterialApp(home:FirstScreen());
+  }
+}
+class FirstScreen extends StatefulWidget{
+  _FirstScreen createState() => _FirstScreen() ;
+}
+class _FirstScreen extends State<FirstScreen>{
+  bool hasMore=false;
+  bool isLoading=false;
+  void initState(){
+    super.initState();
+    controller.addListener((){
+      if(controller.position.pixels > controller.position.maxScrollExtent -200 && !isLoading){
+        getNews();
+        setState(() {
+
+        });
+      }
+    });
+  }
+  ScrollController controller =ScrollController();
+  String? page;
+  Future<void> _launchInApp(String url) async {
+    if (!await launchUrl(
+      Uri.parse(url),
+      mode: LaunchMode.inAppWebView,
+      webViewConfiguration: const WebViewConfiguration(
+        enableJavaScript: true,
+      ),
+    )) {
+      throw Exception('Could not launch $url');
+    }
+  }
+  List<dynamic> data=[];
+  Future<List<dynamic>> getNews() async{
+    Services s=  Services();
+
+    var response = await s.getPosts(page);
+    if(response.statusCode==200 && !isLoading){
+      setState(() {
+        isLoading=true;
+      });
+
+      print('got response');
+
+      data = jsonDecode(response.body)['results'];
+      print('got data');
+      page=jsonDecode(response.body)['nextPage']  ;
+      print('got page');
+
+
+
+    }
+    setState(() {
+      isLoading=false;
+    });
+    print('data returned');
+    return data;
+
+
+  }
+  Future<void> onRefresh() async{
+    await getNews();
+    setState(() {
+
+    });
+
+  }
+
+  Widget build(BuildContext context){
+    return Scaffold(
+      appBar: AppBar(title:Text('News '),),
+      body:FutureBuilder(future: getNews(),
+        builder:(context , snapshot){
+
+          if(snapshot.connectionState == ConnectionState.waiting){
+            return Center(child: CircularProgressIndicator(),);
+          }
+          if(snapshot.hasError){
+            return Text(snapshot.error.toString());
+          }
+          return  RefreshIndicator(onRefresh:onRefresh,child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children:[
+              Flexible(child:ListView.builder(itemBuilder:(context,index){
+                if(index==snapshot.data!.length){
+                  return SizedBox(height: 20,);
+                }else{
+                  return Card(elevation:2,shape:OutlineInputBorder(),child:ListTile(onTap:(){_launchInApp(snapshot.data![index]['link']);},title: Text(snapshot.data![index]['title']),));}
+              },itemCount:snapshot.data!.length,))
+            ],
+          ));},
+      ),
+    );
+  }
+}
+  }
