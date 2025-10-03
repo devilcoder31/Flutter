@@ -1,0 +1,95 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io' show File;
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:image_picker/image_picker.dart';
+
+import 'Services.dart';
+
+void main() => runApp(MaterialApp(home: MyApp()));
+
+class MyApp extends StatelessWidget{
+  Widget build(BuildContext context){
+    return MaterialApp(
+      home: FirstScreen(),);
+  }
+}
+class FirstScreen extends StatefulWidget{
+  _FirstScreen createState()=> _FirstScreen();
+}
+class _FirstScreen extends State<FirstScreen>{
+  final key= GlobalKey<FormState>();
+  TextEditingController c1= TextEditingController();
+  TextEditingController c2= TextEditingController();
+  XFile? imageFile;
+  Future<void> uploadImage() async{
+    var image= await ImagePicker().pickImage(source: ImageSource.gallery);
+    if(image!= null){
+      setState(() {
+        imageFile=image;
+      });
+    }
+  }
+  Future<void> uploadData() async{
+    var request = http.MultipartRequest('POST',Uri.parse('https://api.escuelajs.co/api/v1/files/upload'));
+    request.fields['title']=c1.text;
+    request.fields['description']=c2.text;
+    if(imageFile!=null){
+      request.files.add(
+        await http.MultipartFile.fromPath('file',imageFile!.path)
+      );
+    }
+    var response = await request.send();
+    var responseBody = await http.Response.fromStream(response);
+    if(responseBody.statusCode==201){
+      print('uploaded succefully');
+      ScaffoldMessenger.of(context).showSnackBar(new SnackBar(content: Text('Upload Successful')));
+    }
+    else{
+      print(responseBody.statusCode);
+    }
+  }
+  Widget build(BuildContext context){
+    return Form(key:key,child: Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            TextFormField(controller: c1,decoration: InputDecoration(hint:Text("enter title"),border: OutlineInputBorder()),validator:(text){
+              if(text != null && text.isNotEmpty){
+                return null;
+              }else{
+                return 'please insert name';
+              }
+            }),
+
+            TextFormField(autovalidateMode:AutovalidateMode.onUserInteraction,controller: c2,decoration: InputDecoration(hint:Text("enter decription"),border: OutlineInputBorder()),validator:(text){
+              if(text != null && text.isNotEmpty){
+                return null;
+              }
+              else{
+                return " please enter decription";
+              }
+
+            },),
+            imageFile == null? IconButton(onPressed:(){
+              uploadImage();
+            }, icon:Icon(Icons.add_a_photo)) : Image.file(File(imageFile!.path)),
+            ElevatedButton(onPressed:(){
+              if(key.currentState!.validate()){
+                uploadData();
+              }
+            } , child:Text('Upload'))
+          ],
+        ),
+      ),
+    ));
+  }
+}
